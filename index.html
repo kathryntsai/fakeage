@@ -114,8 +114,8 @@ function init(){
 		var output = document.getElementById("viewerdivbody");
 		output.innerHTML = ''; //clear body
 		if (jsonobj.state == 'pregame' && viewer){
-			document.getElementById("viewerdivhead").innerHTML = '<table width="100%" style="margin: 10px;"> <tr>  <td><img src="qrcode.png" alt = "QR code"> </td> <td> Varakozunk a tobbi jatekosra: '+
-					gameaddress +'<br/> Jatekosok:' + jsonobj.players.length + '</td></tr></table>';
+			document.getElementById("viewerdivhead").innerHTML = '<table width="100%" style="margin: 10px;"> <tr>  <td><img src="qrcode.png" alt = "QR code"> </td> <td> We look forward to the next game: '+
+					gameaddress +'<br/> Players:' + jsonobj.players.length + '</td></tr></table>';
 			var pre = document.createElement("b");
 			var playerlist = []
 			for (var player = 0; player<jsonobj.players.length; player ++){
@@ -127,7 +127,7 @@ function init(){
 		}
 		if (jsonobj.state == 'lietome'){
 			if (viewer){
-				document.getElementById("viewerdivhead").innerHTML = jsonobj.question+'<br>Add meg a hazugsagod:<br>';
+				document.getElementById("viewerdivhead").innerHTML = jsonobj.question+'<br>Give me your lie:<br>';
 
 				var pre = document.createElement("p");
 				var playerlist = [];
@@ -147,7 +147,7 @@ function init(){
 		if (jsonobj.state == 'lieselection' ){
 			if (viewer){
 
-				document.getElementById("viewerdivhead").innerHTML = jsonobj.question+'<br>Valaszd ki az igazat:<br>';
+				document.getElementById("viewerdivhead").innerHTML = jsonobj.question+'<br>Choose the right answer:<br>';
 				//display all lies
 
 				lies = sortlies();
@@ -171,7 +171,7 @@ function init(){
 			}else{ //show lie selector ui
 				showonly("#selectliediv");
 				output = document.getElementById("selectliediv") ;
-				output.innerHTML = '<h1>'+jsonobj.question+'<br>Valaszd ki az igazat</h1>';
+				output.innerHTML = '<h1>'+jsonobj.question+'<br>Choose the right one:</h1>';
 				// sort lies in alphabetical order to prevent the truth from floating upper-alpha
 				lies = sortlies();
 				for (var l = 0; l<lies.length; l ++){
@@ -182,7 +182,7 @@ function init(){
 		};
 		if (jsonobj.state == 'scoring'){ //scoring is identical in viewer and player
 			showonly("#viewerdiv");
-			document.getElementById("viewerdivhead").innerHTML = "Pontozas";
+			document.getElementById("viewerdivhead").innerHTML = "Accurate!";
 			var pre = document.createElement("h1");
 			var playerswholiedthis = [];
 			var playerswhochosethis = [];
@@ -197,15 +197,15 @@ function init(){
 			}
 
 			if (jsonobj.currentlie != jsonobj.answer){
-				pretext += jsonobj.currentlie + " <i> egy hazugsag! Bekuldte: </i>  " + playerswholiedthis.join(", ")+"<br> <i> Jatekosok akik elhittek: </i>  "+playerswhochosethis.join(", ");
+				pretext += jsonobj.currentlie + " <i> A lie!  The trickster: </i>  " + playerswholiedthis.join(", ")+"<br> <i> The gullible: </i>  "+playerswhochosethis.join(", ");
 			}else{
 				pretext += jsonobj.currentlie + " <i> az igazsag! </i> <br>"
-				if (playerswhochosethis.length >0) pretext += "<i> A helyesen valaszolo jatekosok: </i>" + playerswhochosethis.join(", ");
-				else pretext += "Senki nem tudta az igazat!";
+				if (playerswhochosethis.length >0) pretext += "<i> The unfooled: </i>" + playerswhochosethis.join(", ");
+				else pretext += "No one knew the truth!";
 			}
 
 			if (playerswholikedthis.length > 0){
-				pretext += "<br> <i> Jatekosok akiknek tetszett a valasz: </i>"+playerswholikedthis.join(", ");
+				pretext += "<br> <i> Players who liked this answer: </i>"+playerswholikedthis.join(", ");
 			}
 			pre.innerHTML = pretext;
 			output.appendChild(pre);
@@ -213,7 +213,7 @@ function init(){
 		};
 		if (jsonobj.state == "finalscoring") {//scoring is identical in viewer and player
 			//var pre = document.createElement("h1");
-			document.getElementById("viewerdivhead").innerHTML = jsonobj.question + ' (' + jsonobj.answer + ')' + ' <br> Pontok osszesitese:';
+			document.getElementById("viewerdivhead").innerHTML = jsonobj.question + ' (' + jsonobj.answer + ')' + ' <br> Points addition:';
 			//console.log(pre.innerHTML);
 			//output.appendChild(pre);
 
@@ -244,7 +244,7 @@ function init(){
 			}
 			for (var tablecount = 0; tablecount < numtables; tablecount++) {
 				tabletext += '<td valign="top">';
-				tabletext += "<table border = 0><thead><tr><th>#</th><th>Jatekos</th><th>Hazugsaga</th><th>"+cuppng+"</th><th>"+likepng+"</th></tr></thead><tbody class=\"ui-widget-content\">";
+				tabletext += "<table border = 0><thead><tr><th>#</th><th>Jatekos</th><th>It's a lie</th><th>"+cuppng+"</th><th>"+likepng+"</th></tr></thead><tbody class=\"ui-widget-content\">";
 
 				for (var player = stepsize *tablecount ; player < Math.min(jsonobj.players.length, (stepsize*(tablecount+1))); player++) {
 					var p = jsonobj.players[player];
@@ -320,12 +320,12 @@ function forcestart(){
 function lie(){
 	mylie = $("#mylie").val().toUpperCase();
 	if (mylie == jsonobj.answer){
-		$("#mylie").val("Ez az igazsag, hazudj valamit inkabb!");
+		$("#mylie").val("This is the truth, lie about something else!");
 	}else{
 		connection.send("lie:"+mylie);
 		$("#mylie").hide();
 		$("#liebtn").hide();
-		document.getElementById("questionh").innerHTML = "Hazugsag bekuldve";
+		document.getElementById("questionh").innerHTML = "Lie submitted!";
 	}
 }
 
@@ -340,13 +340,13 @@ function sortlies(){
 
 function selectlie(me){
 	if (me == mylie){ // you cant select your own lie!
-		$("#selectliediv").append('<h1>Nem valaszthatod a sajat hazugsagodat, valassz mast!</h1>\n').trigger('create');
+		$("#selectliediv").append("<h1>You can't choose your own lie!</h1>\n").trigger('create');
 		return;
 	}
 	console.log("Selected lie:",me);
 	connection.send("choice:"+me);
 	output = document.getElementById("selectliediv") ;
-	output.innerHTML = '<h1>Valasztasod bekuldve.<br><br>Valaszd ki a szerinted legkreativabb valaszt:<br><br>'+jsonobj.question+'</h1>';
+	output.innerHTML = '<h1>Yours has been sent!<br><br>Choose the one you think is the most creative:<br><br>'+jsonobj.question+'</h1>';
 	// sort lies in alphabetical order to prevent the truth from floating upper-alpha
 	lies = sortlies();
 	for (var l = 0; l<lies.length; l ++){
@@ -357,12 +357,12 @@ function selectlie(me){
 
 function like(me){
 	if (me == mylie){ // you cant select your own lie!
-		$("#selectliediv").append('<h1>A sajat hazugsagodat nem valaszthatod!</h1>\n').trigger('create');
+		$("#selectliediv").append("<h1>You can't tell your own lies!</h1>\n").trigger('create');
 		return;
 	}
 	console.log("liked:"+me);
 	connection.send('like:'+me);
-	document.getElementById("selectliediv").innerHTML = '<h1>Varakozas a tobbiekre...</h1>' ;
+	document.getElementById("selectliediv").innerHTML = '<h1>Hmmmm...</h1>' ;
 
 }
 
@@ -387,7 +387,7 @@ function showquestion(q){
 	showonly("#enterliediv");
 	$("#mylie").show();
 	$("#liebtn").show();
-	$("#mylie").val("Ird be a hazugsagodat"+Math.floor(Math.random()*1000));
+	$("#mylie").val("Enter your lie here!");
 	document.getElementById("questionh").innerHTML = q;
 }
 
